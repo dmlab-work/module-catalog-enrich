@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © DMLab. All rights reserved.
+ * Licensed under the Open Software License version 3.0 (OSL-3.0). See LICENSE.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Magento\Backend\Block\Template" name="dmlab_catalog_enrich.not_configured"
+                   template="DmLab_CatalogEnrich::not_configured.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">DmLab\CatalogEnrich\ViewModel\TypeSafeStatus</argument>
+                </arguments>
+            </block>
+            <block class="Magento\Backend\Block\Template" name="dmlab_catalog_enrich.last_run"
+                   template="DmLab_CatalogEnrich::last_run.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">DmLab\CatalogEnrich\ViewModel\LastRun</argument>
+                    <argument name="show_suggestion_queue" xsi:type="boolean">true</argument>
+                </arguments>
+            </block>
+            <uiComponent name="dmlab_catalog_enrich_suggestion_listing"/>
+        </referenceContainer>
+    </body>
+</page>

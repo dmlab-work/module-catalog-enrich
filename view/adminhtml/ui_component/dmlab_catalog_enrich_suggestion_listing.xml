@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © DMLab. All rights reserved.
+ * Licensed under the Open Software License version 3.0 (OSL-3.0). See LICENSE.
+ */
+-->
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">dmlab_catalog_enrich_suggestion_listing.dmlab_catalog_enrich_suggestion_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>dmlab_catalog_enrich_suggestion_columns</spinner>
+        <deps>
+            <dep>dmlab_catalog_enrich_suggestion_listing.dmlab_catalog_enrich_suggestion_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="dmlab_catalog_enrich_suggestion_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">suggestion_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>DmLab_CatalogEnrich::suggestions</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider"
+                      name="dmlab_catalog_enrich_suggestion_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>suggestion_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <massaction name="listing_massaction">
+            <action name="approve" class="DmLab\CatalogEnrich\Ui\Component\MassAction\AclAction">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="aclResource" xsi:type="string">DmLab_CatalogEnrich::suggestions_apply</item>
+                    </item>
+                </argument>
+                <settings>
+                    <confirm>
+                        <message translate="true">Apply the selected pending suggestions to the products?</message>
+                        <title translate="true">Approve suggestions</title>
+                    </confirm>
+                    <url path="dmlab_catalog_enrich/suggestion/massApprove"/>
+                    <type>approve</type>
+                    <label translate="true">Approve</label>
+                </settings>
+            </action>
+            <action name="reject" class="DmLab\CatalogEnrich\Ui\Component\MassAction\AclAction">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="aclResource" xsi:type="string">DmLab_CatalogEnrich::suggestions_apply</item>
+                    </item>
+                </argument>
+                <settings>
+                    <confirm>
+                        <message translate="true">Reject the selected pending suggestions? A rejected value is never suggested again for that product.</message>
+                        <title translate="true">Reject suggestions</title>
+                    </confirm>
+                    <url path="dmlab_catalog_enrich/suggestion/massReject"/>
+                    <type>reject</type>
+                    <label translate="true">Reject</label>
+                </settings>
+            </action>
+            <action name="revert" class="DmLab\CatalogEnrich\Ui\Component\MassAction\AclAction">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="aclResource" xsi:type="string">DmLab_CatalogEnrich::suggestions_apply</item>
+                    </item>
+                </argument>
+                <settings>
+                    <confirm>
+                        <message translate="true">Restore the previous values of the selected applied suggestions?</message>
+                        <title translate="true">Revert suggestions</title>
+                    </confirm>
+                    <url path="dmlab_catalog_enrich/suggestion/massRevert"/>
+                    <type>revert</type>
+                    <label translate="true">Revert</label>
+                </settings>
+            </action>
+        </massaction>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="dmlab_catalog_enrich_suggestion_columns">
+        <selectionsColumn name="ids">
+            <settings>
+                <indexField>suggestion_id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="suggestion_id">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>desc</sorting>
+            </settings>
+        </column>
+        <column name="sku" class="DmLab\CatalogEnrich\Ui\Component\Listing\Column\ProductLink">
+            <settings>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <label translate="true">SKU</label>
+            </settings>
+        </column>
+        <column name="product_name" class="DmLab\CatalogEnrich\Ui\Component\Listing\Column\ProductLink">
+            <settings>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <label translate="true">Product Name</label>
+            </settings>
+        </column>
+        <column name="attribute_label">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Attribute</label>
+            </settings>
+        </column>
+        <column name="current_value" class="DmLab\CatalogEnrich\Ui\Component\Listing\Column\CurrentValue">
+            <settings>
+                <label translate="true">Current Value</label>
+                <sortable>false</sortable>
+            </settings>
+        </column>
+        <column name="value" class="DmLab\CatalogEnrich\Ui\Component\Listing\Column\OptionLabels">
+            <settings>
+                <label translate="true">Suggested Value</label>
+                <sortable>false</sortable>
+            </settings>
+        </column>
+        <column name="probability" class="DmLab\CatalogEnrich\Ui\Component\Listing\Column\Probability">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Probability</label>
+            </settings>
+        </column>
+        <column name="status" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <options class="DmLab\CatalogEnrich\Model\Suggestion\Source\Status"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Status</label>
+            </settings>
+        </column>
+        <column name="model">
+            <settings>
+                <label translate="true">Model</label>
+            </settings>
+        </column>
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Created</label>
+            </settings>
+        </column>
+        <column name="updated_at" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Updated</label>
+            </settings>
+        </column>
+    </columns>
+</listing>

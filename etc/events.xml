@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © DMLab. All rights reserved.
+ * Licensed under the Open Software License version 3.0 (OSL-3.0). See LICENSE.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="clean_cache_by_tags">
+        <observer name="dmlab_catalog_enrich_record_cache_tags"
+                  instance="DmLab\CatalogEnrich\Observer\CacheTagRecorder"/>
+    </event>
+</config>

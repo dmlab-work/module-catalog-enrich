@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © DMLab. All rights reserved.
+ * Licensed under the Open Software License version 3.0 (OSL-3.0). See LICENSE.
+ */
+-->
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <listingToolbar name="listing_top">
+        <massaction name="listing_massaction">
+            <action name="dmlab_catalog_enrich">
+                <settings>
+                    <confirm>
+                        <message translate="true">Queue the selected products for attribute enrichment? Product text is sent to TypeSafe.</message>
+                        <title translate="true">Enrich attributes</title>
+                    </confirm>
+                    <url path="dmlab_catalog_enrich/product/massEnrich"/>
+                    <type>dmlab_catalog_enrich</type>
+                    <label translate="true">Enrich attributes</label>
+                </settings>
+            </action>
+        </massaction>
+    </listingToolbar>
+</listing>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © DMLab. All rights reserved.
+ * Licensed under the Open Software License version 3.0 (OSL-3.0). See LICENSE.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <dmlab_catalog_enrich>
+            <general>
+                <state_attributes/>
+                <include_not_visible>0</include_not_visible>
+            </general>
+            <cron>
+                <enabled>0</enabled>
+                <products_per_run>500</products_per_run>
+            </cron>
+        </dmlab_catalog_enrich>
+    </default>
+</config>

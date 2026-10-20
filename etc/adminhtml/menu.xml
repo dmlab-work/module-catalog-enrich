@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © DMLab. All rights reserved.
+ * Licensed under the Open Software License version 3.0 (OSL-3.0). See LICENSE.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="DmLab_CatalogEnrich::enrich" title="Catalog Enrichment" translate="title"
+             module="DmLab_CatalogEnrich" sortOrder="100" parent="Magento_Catalog::catalog"
+             resource="DmLab_CatalogEnrich::enrich"/>
+        <add id="DmLab_CatalogEnrich::rules" title="Rules" translate="title"
+             module="DmLab_CatalogEnrich" sortOrder="10" parent="DmLab_CatalogEnrich::enrich"
+             action="dmlab_catalog_enrich/rule/index" resource="DmLab_CatalogEnrich::rules"/>
+        <add id="DmLab_CatalogEnrich::suggestions" title="Suggestions" translate="title"
+             module="DmLab_CatalogEnrich" sortOrder="20" parent="DmLab_CatalogEnrich::enrich"
+             action="dmlab_catalog_enrich/suggestion/index" resource="DmLab_CatalogEnrich::suggestions"/>
+        <add id="DmLab_CatalogEnrich::attempts" title="Attempts" translate="title"
+             module="DmLab_CatalogEnrich" sortOrder="30" parent="DmLab_CatalogEnrich::enrich"
+             action="dmlab_catalog_enrich/attempt/index" resource="DmLab_CatalogEnrich::attempts"/>
+    </menu>
+</config>

@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © DMLab. All rights reserved.
+ * Licensed under the Open Software License version 3.0 (OSL-3.0). See LICENSE.
+ */
+-->
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">dmlab_catalog_enrich_attempt_listing.dmlab_catalog_enrich_attempt_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>dmlab_catalog_enrich_attempt_columns</spinner>
+        <deps>
+            <dep>dmlab_catalog_enrich_attempt_listing.dmlab_catalog_enrich_attempt_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="dmlab_catalog_enrich_attempt_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">attempt_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>DmLab_CatalogEnrich::attempts</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider"
+                      name="dmlab_catalog_enrich_attempt_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>attempt_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <massaction name="listing_massaction">
+            <action name="ask_again" class="DmLab\CatalogEnrich\Ui\Component\MassAction\AclAction">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="aclResource" xsi:type="string">DmLab_CatalogEnrich::run</item>
+                    </item>
+                </argument>
+                <settings>
+                    <confirm>
+                        <message translate="true">Forget the selected attempts? The next run asks TypeSafe again about these products and attributes (billed requests).</message>
+                        <title translate="true">Ask again on next run</title>
+                    </confirm>
+                    <url path="dmlab_catalog_enrich/attempt/massDelete"/>
+                    <type>ask_again</type>
+                    <label translate="true">Ask again on next run</label>
+                </settings>
+            </action>
+        </massaction>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="dmlab_catalog_enrich_attempt_columns">
+        <selectionsColumn name="ids">
+            <settings>
+                <indexField>attempt_id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="sku">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">SKU</label>
+            </settings>
+        </column>
+        <column name="product_name">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Product Name</label>
+            </settings>
+        </column>
+        <column name="attribute_label">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Attribute</label>
+            </settings>
+        </column>
+        <column name="outcome" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <options class="DmLab\CatalogEnrich\Model\Attempt\Source\Outcome"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Outcome</label>
+            </settings>
+        </column>
+        <column name="attempts">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Attempts</label>
+            </settings>
+        </column>
+        <column name="error_message">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Error Message</label>
+            </settings>
+        </column>
+        <column name="model">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Model</label>
+            </settings>
+        </column>
+        <column name="attempted_at" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Attempted At</label>
+                <sorting>desc</sorting>
+            </settings>
+        </column>
+        <column name="next_attempt_at" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Next Attempt At</label>
+            </settings>
+        </column>
+    </columns>
+</listing>

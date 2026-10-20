@@ -1,0 +1,196 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © DMLab. All rights reserved.
+ * Licensed under the Open Software License version 3.0 (OSL-3.0). See LICENSE.
+ */
+-->
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">dmlab_catalog_enrich_rule_form.dmlab_catalog_enrich_rule_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Rule</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="save" class="DmLab\CatalogEnrich\Block\Adminhtml\Rule\Edit\SaveButton"/>
+            <button name="delete" class="DmLab\CatalogEnrich\Block\Adminhtml\Rule\Edit\DeleteButton"/>
+            <button name="back" class="DmLab\CatalogEnrich\Block\Adminhtml\Rule\Edit\BackButton"/>
+        </buttons>
+        <namespace>dmlab_catalog_enrich_rule_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>dmlab_catalog_enrich_rule_form.dmlab_catalog_enrich_rule_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="dmlab_catalog_enrich_rule_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="dmlab_catalog_enrich/rule/save"/>
+        </settings>
+        <aclResource>DmLab_CatalogEnrich::rules</aclResource>
+        <dataProvider class="DmLab\CatalogEnrich\Ui\DataProvider\RuleFormDataProvider"
+                      name="dmlab_catalog_enrich_rule_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>rule_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <fieldset name="general">
+        <settings>
+            <label/>
+        </settings>
+        <field name="rule_id" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+                <dataScope>rule_id</dataScope>
+            </settings>
+        </field>
+        <field name="attribute_code" sortOrder="10" formElement="select">
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Attribute</label>
+                <dataScope>attribute_code</dataScope>
+                <notice translate="true">Select, multiselect and Yes/No attributes with options. Cannot be changed later.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="DmLab\CatalogEnrich\Model\Config\Source\EligibleAttributes"/>
+                        <caption translate="true">-- Please Select --</caption>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="mode" sortOrder="20" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">shadow</item>
+                </item>
+            </argument>
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Mode</label>
+                <dataScope>mode</dataScope>
+                <notice translate="true">Start with Shadow, run the CLI command bin/magento dmlab:catalog-enrich:calibrate to pick a threshold, then switch to Review or Auto. Changes apply on the next enrichment run.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="DmLab\CatalogEnrich\Model\Rule\Source\Mode"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="threshold" sortOrder="30" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">0.9</item>
+                </item>
+            </argument>
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="validate-number" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Threshold</label>
+                <dataScope>threshold</dataScope>
+                <notice translate="true">Greater than 0.5 and less than 1. Default 0.9.</notice>
+            </settings>
+        </field>
+        <field name="instructions" sortOrder="40" formElement="textarea">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Instructions</label>
+                <dataScope>instructions</dataScope>
+                <notice translate="true">Empty = default. Select: "What is the {attribute} of this product?" Multiselect: "Does "{option}" apply to the {attribute} of this product?" (must contain {option}). Yes/No: "Is "{attribute}" true for this product?"</notice>
+            </settings>
+        </field>
+        <field name="extra_rules" sortOrder="50" formElement="textarea">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Extra Rules</label>
+                <dataScope>extra_rules</dataScope>
+                <notice translate="true">One rule per line, sent with the question.</notice>
+            </settings>
+        </field>
+        <field name="attribute_set_ids" sortOrder="60" formElement="multiselect">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Attribute Sets</label>
+                <dataScope>attribute_set_ids</dataScope>
+                <notice translate="true">Empty = every attribute set that has the attribute.</notice>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Magento\Catalog\Model\Product\AttributeSet\Options"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+        <field name="fill_mode" sortOrder="70" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">empty_only</item>
+                </item>
+            </argument>
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataType>text</dataType>
+                <label translate="true">Fill Mode</label>
+                <dataScope>fill_mode</dataScope>
+                <notice translate="true">"Add missing options" is for multiselect attributes only.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="DmLab\CatalogEnrich\Model\Rule\Source\FillMode"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="treat_zero_as_empty" sortOrder="80" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">0</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Treat No as Empty</label>
+                <dataScope>treat_zero_as_empty</dataScope>
+                <notice translate="true">Yes/No attributes only: a stored "No" counts as empty and may be overwritten.</notice>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

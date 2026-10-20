@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © DMLab. All rights reserved.
+ * Licensed under the Open Software License version 3.0 (OSL-3.0). See LICENSE.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="dmlab" translate="label" sortOrder="400">
+            <label>DMLab</label>
+        </tab>
+        <section id="dmlab_catalog_enrich" translate="label" type="text" sortOrder="60"
+                 showInDefault="1" showInWebsite="0" showInStore="0">
+            <class>separator-top</class>
+            <label>Catalog Enrichment</label>
+            <tab>dmlab</tab>
+            <resource>DmLab_CatalogEnrich::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General</label>
+                <field id="state_attributes" translate="label comment" type="multiselect" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Extra Text Attributes</label>
+                    <source_model>DmLab\CatalogEnrich\Model\Config\Source\TextAttributes</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <comment>Sent to TypeSafe with name, short description and description. Model and API key are set in DMLab → TypeSafe.</comment>
+                </field>
+                <field id="include_not_visible" translate="label comment" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Include Products Not Visible Individually</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>No = skip products with visibility "Not Visible Individually" (e.g. configurable children).</comment>
+                </field>
+            </group>
+            <group id="cron" translate="label" type="text" sortOrder="20"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Nightly Cron</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Nightly Enrichment</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="products_per_run" translate="label comment" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Products per Run</label>
+                    <comment>Counts products that produced a request; a night scans at most 20× this many products.</comment>
+                    <validate>validate-digits</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

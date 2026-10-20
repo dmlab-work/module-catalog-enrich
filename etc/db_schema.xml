@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © DMLab. All rights reserved.
+ * Licensed under the Open Software License version 3.0 (OSL-3.0). See LICENSE.
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="dmlab_catalog_enrich_rule" resource="default" engine="innodb" comment="DmLab Catalog Enrich Rule">
+        <column xsi:type="int" name="rule_id" unsigned="true" nullable="false" identity="true" comment="Rule Id"/>
+        <column xsi:type="varchar" name="attribute_code" length="255" nullable="false" comment="Attribute Code"/>
+        <column xsi:type="varchar" name="mode" length="16" nullable="false" default="off" comment="Mode"/>
+        <column xsi:type="decimal" name="threshold" scale="4" precision="5" unsigned="false" nullable="false"
+                default="0.9000" comment="Acceptance Threshold"/>
+        <column xsi:type="text" name="instructions" nullable="true" comment="Custom Instructions"/>
+        <column xsi:type="text" name="extra_rules" nullable="true" comment="Extra Rules (one per line)"/>
+        <column xsi:type="varchar" name="attribute_set_ids" length="1024" nullable="true"
+                comment="Attribute Set Ids (CSV)"/>
+        <column xsi:type="varchar" name="fill_mode" length="16" nullable="false" default="empty_only"
+                comment="Fill Mode"/>
+        <column xsi:type="smallint" name="treat_zero_as_empty" unsigned="true" nullable="false" default="0"
+                comment="Boolean 0 Counts As Empty"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Updated At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="rule_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="DMLAB_CATALOG_ENRICH_RULE_ATTRIBUTE_CODE">
+            <column name="attribute_code"/>
+        </constraint>
+    </table>
+    <table name="dmlab_catalog_enrich_attempt" resource="default" engine="innodb"
+           comment="DmLab Catalog Enrich Attempt Ledger">
+        <column xsi:type="int" name="attempt_id" unsigned="true" nullable="false" identity="true"
+                comment="Attempt Id"/>
+        <column xsi:type="int" name="product_id" unsigned="true" nullable="false" comment="Product Id"/>
+        <column xsi:type="varchar" name="attribute_code" length="255" nullable="false" comment="Attribute Code"/>
+        <column xsi:type="varchar" name="fingerprint" length="64" nullable="false" comment="Request Fingerprint"/>
+        <column xsi:type="varchar" name="outcome" length="16" nullable="false" comment="Outcome"/>
+        <column xsi:type="mediumtext" name="answer" nullable="true" comment="Normalized Answers (JSON)"/>
+        <column xsi:type="varchar" name="model" length="64" nullable="true" comment="Answering Model"/>
+        <column xsi:type="varchar" name="error_message" length="255" nullable="true" comment="Error Message"/>
+        <column xsi:type="smallint" name="attempts" unsigned="true" nullable="false" default="0"
+                comment="Attempts With This Fingerprint"/>
+        <column xsi:type="timestamp" name="attempted_at" on_update="false" nullable="false"
+                comment="Attempted At"/>
+        <column xsi:type="timestamp" name="next_attempt_at" on_update="false" nullable="true"
+                comment="Next Attempt At (errors)"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="attempt_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="DMLAB_CATALOG_ENRICH_ATTEMPT_PRODUCT_ID_ATTRIBUTE_CODE">
+            <column name="product_id"/>
+            <column name="attribute_code"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="DMLAB_CATALOG_ENRICH_ATTEMPT_PRD_ID_CAT_PRD_ENTT_ENTT_ID"
+                    table="dmlab_catalog_enrich_attempt" column="product_id"
+                    referenceTable="catalog_product_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="DMLAB_CATALOG_ENRICH_ATTEMPT_OUTCOME_NEXT_ATTEMPT_AT" indexType="btree">
+            <column name="outcome"/>
+            <column name="next_attempt_at"/>
+        </index>
+        <index referenceId="DMLAB_CATALOG_ENRICH_ATTEMPT_ATTRIBUTE_CODE_OUTCOME" indexType="btree">
+            <column name="attribute_code"/>
+            <column name="outcome"/>
+        </index>
+    </table>
+    <table name="dmlab_catalog_enrich_suggestion" resource="default" engine="innodb"
+           comment="DmLab Catalog Enrich Suggestion">
+        <column xsi:type="int" name="suggestion_id" unsigned="true" nullable="false" identity="true"
+                comment="Suggestion Id"/>
+        <column xsi:type="int" name="product_id" unsigned="true" nullable="false" comment="Product Id"/>
+        <column xsi:type="varchar" name="attribute_code" length="255" nullable="false" comment="Attribute Code"/>
+        <column xsi:type="text" name="value" nullable="false" comment="Suggested Raw Value"/>
+        <column xsi:type="text" name="previous_value" nullable="true" comment="Raw Value Before"/>
+        <column xsi:type="decimal" name="probability" scale="4" precision="5" unsigned="false" nullable="true"
+                comment="Decision Probability"/>
+        <column xsi:type="varchar" name="status" length="16" nullable="false" comment="Status"/>
+        <column xsi:type="varchar" name="fingerprint" length="64" nullable="false" comment="Request Fingerprint"/>
+        <column xsi:type="varchar" name="model" length="64" nullable="true" comment="Answering Model"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Updated At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="suggestion_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="DMLAB_CATALOG_ENRICH_SUGG_PRD_ID_CAT_PRD_ENTT_ENTT_ID"
+                    table="dmlab_catalog_enrich_suggestion" column="product_id"
+                    referenceTable="catalog_product_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="DMLAB_CATALOG_ENRICH_SUGGESTION_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+        <index referenceId="DMLAB_CATALOG_ENRICH_SUGG_PRD_ID_ATTR_CODE_FINGERPRINT" indexType="btree">
+            <column name="product_id"/>
+            <column name="attribute_code"/>
+            <column name="fingerprint"/>
+        </index>
+    </table>
+    <table name="dmlab_catalog_enrich_deferred" resource="default" engine="innodb"
+           comment="DmLab Catalog Enrich Deferred Queue">
+        <column xsi:type="int" name="product_id" unsigned="true" nullable="false" comment="Product Id"/>
+        <column xsi:type="timestamp" name="deferred_at" on_update="false" nullable="false"
+                default="CURRENT_TIMESTAMP" comment="Deferred At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="product_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="DMLAB_CATALOG_ENRICH_DEFERRED_PRD_ID_CAT_PRD_ENTT_ENTT_ID"
+                    table="dmlab_catalog_enrich_deferred" column="product_id"
+                    referenceTable="catalog_product_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="DMLAB_CATALOG_ENRICH_DEFERRED_DEFERRED_AT" indexType="btree">
+            <column name="deferred_at"/>
+        </index>
+    </table>
+</schema>

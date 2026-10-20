@@ -1,0 +1,40 @@
+<?php
+/**
+ * Copyright © DMLab. All rights reserved.
+ * Licensed under the Open Software License version 3.0 (OSL-3.0). See LICENSE.
+ */
+
+/** @var \Magento\Backend\Block\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \DmLab\CatalogEnrich\ViewModel\LastRun $viewModel */
+$viewModel = $block->getData('view_model');
+$runs = $viewModel->getRuns();
+$suggestionQueue = $block->getData('show_suggestion_queue') ? $viewModel->getSuggestionQueue() : null;
+?>
+<?php if ($runs !== [] || $suggestionQueue !== null): ?>
+    <div class="messages">
+        <?php foreach ($runs as $run): ?>
+            <?php $type = $run['stop_reason'] === null ? 'message-notice notice' : 'message-warning warning' ?>
+            <div class="message <?= /* @noEscape */ $type ?>">
+                <div>
+                    <strong><?= $escaper->escapeHtml(__('Last run (%1), %2:', $run['source'], $run['time'])) ?></strong>
+                    <?php if ($run['batch'] !== null): ?>
+                        <?= $escaper->escapeHtml($run['batch']) ?>
+                    <?php endif; ?>
+                    <?= $escaper->escapeHtml($run['summary']) ?>
+                    <?php if ($run['stop_reason'] !== null): ?>
+                        <strong><?= $escaper->escapeHtml(__('Stopped: %1', $run['stop_reason'])) ?></strong>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+        <?php if ($suggestionQueue !== null): ?>
+            <div class="message message-notice notice">
+                <div>
+                    <strong><?= $escaper->escapeHtml(__('Suggestion queue, %1:', $suggestionQueue['time'])) ?></strong>
+                    <?= $escaper->escapeHtml($suggestionQueue['summary']) ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>

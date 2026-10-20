@@ -1,0 +1,19 @@
+<?php
+/**
+ * Copyright © DMLab. All rights reserved.
+ * Licensed under the Open Software License version 3.0 (OSL-3.0). See LICENSE.
+ */
+
+/** @var \Magento\Backend\Block\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \DmLab\CatalogEnrich\ViewModel\TypeSafeStatus $viewModel */
+$viewModel = $block->getData('view_model');
+$message = $viewModel->getNotConfiguredMessage();
+?>
+<?php if ($message !== null): ?>
+    <div class="messages">
+        <div class="message message-warning warning">
+            <div><?= $escaper->escapeHtml($message) ?></div>
+        </div>
+    </div>
+<?php endif; ?>

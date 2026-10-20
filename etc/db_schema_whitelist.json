@@ -1,0 +1,81 @@
+{
+    "dmlab_catalog_enrich_rule": {
+        "column": {
+            "rule_id": true,
+            "attribute_code": true,
+            "mode": true,
+            "threshold": true,
+            "instructions": true,
+            "extra_rules": true,
+            "attribute_set_ids": true,
+            "fill_mode": true,
+            "treat_zero_as_empty": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "DMLAB_CATALOG_ENRICH_RULE_ATTRIBUTE_CODE": true
+        }
+    },
+    "dmlab_catalog_enrich_attempt": {
+        "column": {
+            "attempt_id": true,
+            "product_id": true,
+            "attribute_code": true,
+            "fingerprint": true,
+            "outcome": true,
+            "answer": true,
+            "model": true,
+            "error_message": true,
+            "attempts": true,
+            "attempted_at": true,
+            "next_attempt_at": true
+        },
+        "index": {
+            "DMLAB_CATALOG_ENRICH_ATTEMPT_OUTCOME_NEXT_ATTEMPT_AT": true,
+            "DMLAB_CATALOG_ENRICH_ATTEMPT_ATTRIBUTE_CODE_OUTCOME": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "DMLAB_CATALOG_ENRICH_ATTEMPT_PRODUCT_ID_ATTRIBUTE_CODE": true,
+            "DMLAB_CATALOG_ENRICH_ATTEMPT_PRD_ID_CAT_PRD_ENTT_ENTT_ID": true
+        }
+    },
+    "dmlab_catalog_enrich_suggestion": {
+        "column": {
+            "suggestion_id": true,
+            "product_id": true,
+            "attribute_code": true,
+            "value": true,
+            "previous_value": true,
+            "probability": true,
+            "status": true,
+            "fingerprint": true,
+            "model": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "DMLAB_CATALOG_ENRICH_SUGGESTION_STATUS": true,
+            "DMLAB_CATALOG_ENRICH_SUGG_PRD_ID_ATTR_CODE_FINGERPRINT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "DMLAB_CATALOG_ENRICH_SUGG_PRD_ID_CAT_PRD_ENTT_ENTT_ID": true
+        }
+    },
+    "dmlab_catalog_enrich_deferred": {
+        "column": {
+            "product_id": true,
+            "deferred_at": true
+        },
+        "index": {
+            "DMLAB_CATALOG_ENRICH_DEFERRED_DEFERRED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "DMLAB_CATALOG_ENRICH_DEFERRED_PRD_ID_CAT_PRD_ENTT_ENTT_ID": true
+        }
+    }
+}
