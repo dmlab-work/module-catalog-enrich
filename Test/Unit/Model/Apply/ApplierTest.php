@@ -11,6 +11,7 @@ use DmLab\CatalogEnrich\Exception\IneligibleAttributeException;
 use DmLab\CatalogEnrich\Model\Apply\Applier;
 use DmLab\CatalogEnrich\Model\Attribute\AttributeCatalog;
 use DmLab\CatalogEnrich\Model\Attribute\AttributeDescriptor;
+use DmLab\CatalogEnrich\Model\ResourceModel\EmptyValue;
 use DmLab\CatalogEnrich\Model\ResourceModel\Rule as RuleResource;
 use DmLab\CatalogEnrich\Model\ResourceModel\Suggestion as SuggestionResource;
 use DmLab\CatalogEnrich\Model\Rule;
@@ -44,6 +45,25 @@ class ApplierTest extends TestCase
      * @var ProductAction&MockObject
      */
     private ProductAction $productAction;
+
+    /**
+     * Arguments of every EmptyValue::delete call.
+     *
+     * @var array<int, array{0: int, 1: string}>
+     */
+    private array $emptyValueDeletes = [];
+
+    /**
+     * Deletes the test expects; checked after every test.
+     *
+     * @var array<int, array{0: int, 1: string}>
+     */
+    private array $expectedEmptyValueDeletes = [];
+
+    /**
+     * @var \Throwable|null
+     */
+    private ?\Throwable $emptyValueError = null;
 
     /**
      * @var ProductDataLoader&MockObject
@@ -147,6 +167,7 @@ class ApplierTest extends TestCase
 
         return new Applier(
             $this->productAction,
+            $this->emptyValue(),
             $this->loader,
             $this->attributeCatalog,
             $this->ruleRepository,
@@ -158,6 +179,24 @@ class ApplierTest extends TestCase
             $this->cache,
             $this->logger
         );
+    }
+
+    private function emptyValue(): EmptyValue
+    {
+        $emptyValue = $this->createStub(EmptyValue::class);
+        $emptyValue->method('delete')->willReturnCallback(function (int $productId, string $code): void {
+            $this->emptyValueDeletes[] = [$productId, $code];
+            if ($this->emptyValueError !== null) {
+                throw $this->emptyValueError;
+            }
+        });
+
+        return $emptyValue;
+    }
+
+    protected function assertPostConditions(): void
+    {
+        self::assertSame($this->expectedEmptyValueDeletes, $this->emptyValueDeletes);
     }
 
     /**
@@ -198,6 +237,7 @@ class ApplierTest extends TestCase
     {
         $this->productAction->expects(self::once())->method('updateAttributes')
             ->with([self::ID], [$code => $value], 0);
+        $this->expectedEmptyValueDeletes = $value === null ? [[self::ID, $code]] : [];
         $this->suggestionResource->expects(self::once())->method('save');
         $this->fulltext->expects(self::never())->method('reindexList');
         $this->expectCommit(true);
@@ -749,7 +789,7 @@ class ApplierTest extends TestCase
         self::assertSame('The suggestion no longer exists.', $this->applier->apply($suggestion)->getReason());
     }
 
-    public function testRevertToEmptyWritesNull(): void
+    public function testRevertToEmptyWritesNullAndRemovesTheRow(): void
     {
         $suggestion = $this->suggestion([
             'attribute_code' => 'color',
@@ -764,6 +804,43 @@ class ApplierTest extends TestCase
         self::assertTrue($this->applier->revert($suggestion)->isOk());
         self::assertSame(Suggestion::STATUS_REVERTED, $suggestion->getStatus());
         self::assertFalse($suggestion->hasData('updated_at'));
+    }
+
+    public function testRevertToEmptyMultiselectRemovesTheValue(): void
+    {
+        $suggestion = $this->suggestion([
+            'attribute_code' => 'includes',
+            'value' => '5,1',
+            'previous_value' => '',
+            'status' => Suggestion::STATUS_APPLIED,
+        ]);
+        $this->live('includes', '1,5');
+        $this->expectWrite('includes', null);
+
+        self::assertTrue($this->applier->revert($suggestion)->isOk());
+        self::assertSame(Suggestion::STATUS_REVERTED, $suggestion->getStatus());
+    }
+
+    public function testEmptyValueDeleteFailureRollsBackTheRevert(): void
+    {
+        $suggestion = $this->suggestion([
+            'attribute_code' => 'color',
+            'value' => '12',
+            'previous_value' => null,
+            'status' => Suggestion::STATUS_APPLIED,
+        ]);
+        $this->live('color', '12');
+        $this->productAction->expects(self::once())->method('updateAttributes');
+        $this->emptyValueError = new \RuntimeException('lock wait timeout');
+        $this->expectedEmptyValueDeletes = [[self::ID, 'color']];
+        $this->suggestionResource->expects(self::never())->method('save');
+        $this->expectCommit(false);
+        $this->fulltext->expects(self::once())->method('reindexList')->with([self::ID]);
+
+        $result = $this->applier->revert($suggestion);
+
+        self::assertSame('Could not save the attribute: lock wait timeout', $result->getReason());
+        self::assertSame(Suggestion::STATUS_APPLIED, $suggestion->getStatus());
     }
 
     public function testRevertWriteFailureIsRefusalAndKeepsStatus(): void

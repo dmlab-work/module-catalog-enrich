@@ -10,6 +10,7 @@ namespace DmLab\CatalogEnrich\Model\Apply;
 use DmLab\CatalogEnrich\Exception\IneligibleAttributeException;
 use DmLab\CatalogEnrich\Model\Attribute\AttributeCatalog;
 use DmLab\CatalogEnrich\Model\Attribute\AttributeDescriptor;
+use DmLab\CatalogEnrich\Model\ResourceModel\EmptyValue;
 use DmLab\CatalogEnrich\Model\ResourceModel\Suggestion as SuggestionResource;
 use DmLab\CatalogEnrich\Model\Rule;
 use DmLab\CatalogEnrich\Model\RuleRepository;
@@ -48,6 +49,7 @@ class Applier
 
     /**
      * @param ProductAction $productAction
+     * @param EmptyValue $emptyValue
      * @param ProductDataLoader $productDataLoader
      * @param AttributeCatalog $attributeCatalog
      * @param RuleRepository $ruleRepository
@@ -61,6 +63,7 @@ class Applier
      */
     public function __construct(
         private readonly ProductAction $productAction,
+        private readonly EmptyValue $emptyValue,
         private readonly ProductDataLoader $productDataLoader,
         private readonly AttributeCatalog $attributeCatalog,
         private readonly RuleRepository $ruleRepository,
@@ -344,7 +347,7 @@ class Applier
     }
 
     /**
-     * Write one value of one product at store 0.
+     * Write one value of one product at store 0; null removes the value.
      *
      * @param Suggestion $suggestion
      * @param string|null $value
@@ -361,6 +364,9 @@ class Applier
                 [$suggestion->getAttributeCode() => $value],
                 0
             );
+            if ($value === null) {
+                $this->emptyValue->delete($suggestion->getProductId(), $suggestion->getAttributeCode());
+            }
         } catch (\Throwable $e) {
             if (!$deferred) {
                 $this->endCacheDeferral();
