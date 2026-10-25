@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.2
+
+- Fixed: reverting a suggestion on a product that had no value removes the value instead of leaving an empty (NULL) row.
+- Tested on Magento 2.4.9 and PHP 8.5.
+
 ## 0.0.1
 - Fill empty select, multiselect and boolean attributes from product text via TypeSafe (both-orders Choice for select and boolean, Noul per multiselect option).
 - Per-attribute rules: mode off/shadow/review/auto (new rules start in shadow), threshold, instructions, extra rules, attribute sets, fill mode, "Treat No as Empty" for Yes/No.
