@@ -10,6 +10,7 @@ namespace DmLab\CatalogEnrich\Test\Unit\Model\Attribute;
 use DmLab\CatalogEnrich\Exception\IneligibleAttributeException;
 use DmLab\CatalogEnrich\Model\Attribute\AttributeCatalog;
 use DmLab\CatalogEnrich\Model\Attribute\AttributeDescriptor;
+use DmLab\CatalogEnrich\Test\Unit\PartialStubTrait;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory;
@@ -24,6 +25,8 @@ use PHPUnit\Framework\TestCase;
 
 class AttributeCatalogTest extends TestCase
 {
+    use PartialStubTrait;
+
     /**
      * @param array<int|string, string> $options store-0 option id => label
      */
@@ -42,7 +45,7 @@ class AttributeCatalogTest extends TestCase
         ];
         $attribute = $mock
             ? $this->getMockBuilder(Attribute::class)->disableOriginalConstructor()->onlyMethods($methods)->getMock()
-            : self::getStubBuilder(Attribute::class)->disableOriginalConstructor()->onlyMethods($methods)->getStub();
+            : $this->partialStub(Attribute::class, $methods);
         $attribute->method('getAttributeId')->willReturn($id);
         $attribute->method('getAttributeCode')->willReturn($code);
         $attribute->method('getFrontendInput')->willReturn($input);

@@ -47,6 +47,39 @@ class PackagingTest extends TestCase
             $prefix = $package === 'php' ? '~' : '^';
             self::assertStringStartsWith($prefix, $constraint, $package);
         }
+        self::assertStringContainsString('~8.2.0', $require['php']);
+    }
+
+    public function testComposerHasHomepageAndSupportLinks(): void
+    {
+        $composer = json_decode((string)file_get_contents($this->root() . '/composer.json'), true);
+        self::assertIsArray($composer);
+        $repo = 'https://github.com/dmlab-work/module-catalog-enrich';
+        self::assertSame($repo, $composer['homepage'] ?? null);
+        self::assertSame($repo . '/issues', $composer['support']['issues'] ?? null);
+        self::assertSame($repo, $composer['support']['source'] ?? null);
+    }
+
+    public function testCiTestsEverySupportedPhpWithoutNotifyingPackagist(): void
+    {
+        $composer = json_decode((string)file_get_contents($this->root() . '/composer.json'), true);
+        self::assertIsArray($composer);
+        preg_match_all('/~(\d+\.\d+)\.0/', $composer['require']['php'], $versions);
+        self::assertNotEmpty($versions[1]);
+        $matrix = "php: ['" . implode("', '", $versions[1]) . "']";
+
+        $ci = (string)file_get_contents($this->root() . '/.github/workflows/ci.yml');
+        self::assertStringContainsString($matrix, $ci);
+        self::assertStringContainsString("coverage: \${{ matrix.php == '8.4' && 'pcov' || 'none' }}", $ci);
+
+        $notify = strpos($ci, '- run: composer config notify-on-install false');
+        $configure = strpos($ci, '- name: Configure Magento packages');
+        $install = strpos($ci, '- uses: ramsey/composer-install@');
+        self::assertNotFalse($notify);
+        self::assertNotFalse($configure);
+        self::assertNotFalse($install);
+        self::assertGreaterThan($configure, $notify);
+        self::assertLessThan($install, $notify);
     }
 
     public function testModuleXmlHasNoSetupVersion(): void

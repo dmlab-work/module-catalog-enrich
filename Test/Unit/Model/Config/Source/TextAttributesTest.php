@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace DmLab\CatalogEnrich\Test\Unit\Model\Config\Source;
 
 use DmLab\CatalogEnrich\Model\Config\Source\TextAttributes;
+use DmLab\CatalogEnrich\Test\Unit\PartialStubTrait;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory;
@@ -15,12 +16,11 @@ use PHPUnit\Framework\TestCase;
 
 class TextAttributesTest extends TestCase
 {
+    use PartialStubTrait;
+
     private function attribute(string $code, string $label): Attribute
     {
-        $attribute = self::getStubBuilder(Attribute::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getAttributeCode', 'getDefaultFrontendLabel'])
-            ->getStub();
+        $attribute = $this->partialStub(Attribute::class, ['getAttributeCode', 'getDefaultFrontendLabel']);
         $attribute->method('getAttributeCode')->willReturn($code);
         $attribute->method('getDefaultFrontendLabel')->willReturn($label);
 

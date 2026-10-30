@@ -75,6 +75,13 @@ class SuggestionWriterTest extends TestCase
      */
     private ?string $storedStatus = null;
 
+    /**
+     * Properties already swapped for a mock (PHPUnit 11 stubs are MockObject too, so instanceof can't tell).
+     *
+     * @var array<string, true>
+     */
+    private array $mocked = [];
+
     protected function setUp(): void
     {
         $this->guard = $this->createStub(RejectionGuard::class);
@@ -91,7 +98,8 @@ class SuggestionWriterTest extends TestCase
      */
     private function mock(string $property): MockObject
     {
-        if (!$this->$property instanceof MockObject) {
+        if (!isset($this->mocked[$property])) {
+            $this->mocked[$property] = true;
             $mock = $this->createMock(match ($property) {
                 'guard' => RejectionGuard::class,
                 'resource' => SuggestionResource::class,
