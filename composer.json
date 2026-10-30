@@ -24,7 +24,7 @@
         "issues": "https://github.com/dmlab-work/module-catalog-enrich/issues",
         "source": "https://github.com/dmlab-work/module-catalog-enrich"
     },
-    "version": "0.0.2",
+    "version": "0.0.3",
     "require": {
         "php": "~8.2.0||~8.3.0||~8.4.0||~8.5.0",
         "dmlab/module-typesafe-core": "^0.0.2",

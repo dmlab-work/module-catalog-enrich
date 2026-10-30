@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.3
+
+- Magento 2.4.7+ and PHP 8.2–8.5: Magento module floors lowered to 2.4.7, `psr/log ^2.0||^3.0`, `symfony/console ^6.4||^7.4`, PHPUnit 11.5 or 12.5.
+- `dmlab/module-typesafe-core ^0.0.2`.
+- CI tests PHP 8.2–8.5 and no longer notifies Packagist on install.
+- `homepage` and `support` metadata in `composer.json`.
+- README: merchant-facing intro, install, requirements and architecture sections.
+
 ## 0.0.2
 
 - Fixed: reverting a suggestion on a product that had no value removes the value instead of leaving an empty (NULL) row.
